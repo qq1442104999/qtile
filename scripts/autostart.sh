@@ -12,7 +12,6 @@ blueman-applet &           #蓝牙
 numlockx &                 #在启动时激活 numlock
 dunst -conf ~/.config/qtile/config/dunst.conf & #开启通知server
 /opt/clash-for-windows-bin/cfw & #clash_for_windows
-
+xrandr --dpi 144 &
 sleep 1
 feh --bg-fill --randomize ~/workspace/wallpaper/* &  #壁纸
-#xrandr --dpi 120 &

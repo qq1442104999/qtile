@@ -24,6 +24,13 @@ def float_to_front(qtile):
             if window.floating:
                 window.cmd_bring_to_front()
 
+@lazy.function
+def minimize(qtile):
+    for window in qtile.current_group.windows:
+        if window.minimized:
+            window.minimized = False
+            window.cmd_focus()
+
 @hook.subscribe.client_managed
 def _screen1(window):
     wm_class = window.window.get_wm_class()
@@ -68,12 +75,12 @@ keys = [
         "Return",
         lazy.layout.toggle_split(),
     ),
-    Key([mod], "Return", lazy.spawn(terminal)),                      
-    Key([mod], "space", lazy.next_layout()),                   
-    Key([mod], "q", lazy.window.kill()),                       
-    Key([mod, "control"], "r", lazy.reload_config()),           
-    Key([mod, "control"], "q", lazy.shutdown()),                  
-    Key([mod], "d", lazy.spawn("rofi -show run")),                                      
+    Key([mod], "Return", lazy.spawn(terminal)),
+    Key([mod], "space", lazy.next_layout()),
+    Key([mod], "q", lazy.window.kill()),
+    Key([mod, "control"], "r", lazy.reload_config()),
+    Key([mod, "control"], "q", lazy.shutdown()),
+    Key([mod], "d", lazy.spawn("rofi -show run")),
     Key(
         [mod], "t",
         lazy.window.toggle_floating(), 
@@ -87,13 +94,19 @@ keys = [
         #                   h=int(screen.height / 1.2),
         #),
     ),                                          
-    Key([mod], "f", lazy.window.toggle_fullscreen()),                                          
-    Key([mod, "shift"], "f", lazy.group.setlayout("max")),                                    
+    Key([mod], "f", lazy.window.toggle_fullscreen()),
+    Key([mod], "x", 
+        lazy.window.toggle_minimize(), 
+        lazy.layout.next(),
+        ),
+    Key([mod], "z", minimize),
+    Key([mod, "shift"], "f", lazy.group.setlayout("max")),
     Key([mod], "a", float_to_front),
     Key([mod], "c", lazy.spawn("google-chrome-stable")),
     Key([mod], "F1", lazy.spawn("dolphin")),
     Key([mod], "F2", lazy.spawn("konsole")),
-    Key([mod], "Escape", lazy.spawn("fcitx5-remote -c")), 
+    #Key([mod], "Escape", lazy.spawn("fcitx5-remote -c")),
+    
     #背光
     Key( 
         [], 
@@ -105,6 +118,7 @@ keys = [
         "XF86MonBrightnessDown", 
         lazy.spawn("brightnessctl set 5%-")
     ), 
+    
     #音量
     Key(
         [],
@@ -258,7 +272,7 @@ def init_widgets_list(secondar=False):
             ),
         widget.Systray(
             background = "00000000",
-            icon_size = 21,
+            icon_size = 22,
             padding = 5,
             **systray_decor,
             ),
