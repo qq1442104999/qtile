@@ -1,6 +1,6 @@
 #-----------------------------------------------------------------------------------------------------
 from libqtile import bar, layout, qtile, hook
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile.config import Click, Drag, Group, Key, Match, Screen, ScratchPad, DropDown
 from libqtile.lazy import lazy
 from libqtile.utils import guess_terminal
 from libqtile.widget import backlight, Spacer
@@ -30,6 +30,7 @@ def minimize(qtile):
         if window.minimized:
             window.minimized = False
             window.cmd_focus()
+            return
 
 @hook.subscribe.client_managed
 def _screen1(window):
@@ -81,6 +82,7 @@ keys = [
     Key([mod, "control"], "r", lazy.reload_config()),
     Key([mod, "control"], "q", lazy.shutdown()),
     Key([mod], "d", lazy.spawn("rofi -show run")),
+    #浮动窗口
     Key(
         [mod], "t",
         lazy.window.toggle_floating(), 
@@ -94,20 +96,21 @@ keys = [
         #                   h=int(screen.height / 1.2),
         #),
     ),                                          
+    #全屏窗口
     Key([mod], "f", lazy.window.toggle_fullscreen()),
+    #最小化窗口
     Key([mod], "x", 
         lazy.window.toggle_minimize(), 
         lazy.layout.next(),
         ),
-    Key([mod], "z", minimize),
+    #最小化窗口恢复
+    Key([mod, "shift"], "x", minimize),
     Key([mod, "shift"], "f", lazy.group.setlayout("max")),
+    #浮动窗口置顶
     Key([mod], "a", float_to_front),
-    Key([mod], "c", lazy.spawn("google-chrome-stable")),
-    Key([mod], "F1", lazy.spawn("dolphin")),
-    Key([mod], "F2", lazy.spawn("konsole")),
     #Key([mod], "Escape", lazy.spawn("fcitx5-remote -c")),
     
-    #背光
+    #背光快捷键
     Key( 
         [], 
         "XF86MonBrightnessUp", 
@@ -119,7 +122,7 @@ keys = [
         lazy.spawn("brightnessctl set 5%-")
     ), 
     
-    #音量
+    #音量快捷键
     Key(
         [],
         "XF86AudioRaiseVolume",
@@ -131,6 +134,11 @@ keys = [
         "XF86AudioLowerVolume",
         lazy.spawn("amixer set Master 5%-")
     ),
+
+    #app快捷键
+    Key([mod], "c", lazy.spawn("google-chrome-stable")),
+    Key([mod], "F1", lazy.spawn("dolphin")),
+    Key([mod], "F2", lazy.spawn("konsole")),
 ]
 
 #------------------------------------------------------------------------------------------------------------
@@ -160,6 +168,19 @@ for i in groups:
         ]
     )
 
+groups.append(
+    ScratchPad("scratchpad",[
+        DropDown("term", terminal, 
+                 width=0.7, height=0.7, x=0.15, y=0.15, opacity=0.9)
+        ]
+    )
+)
+
+keys.extend([
+    Key([mod], "z",
+        lazy.group["scratchpad"].dropdown_toggle("term"))
+    ]
+)
 #-------------------------------------------------------------------------------------------------------------
 def init_layout_theme():
     return {"margin":5,
@@ -270,6 +291,7 @@ def init_widgets_list(secondar=False):
             },
             name_transform=lambda name: name.upper(),
             ),
+        #系统托盘
         widget.Systray(
             background = "00000000",
             icon_size = 22,
@@ -277,6 +299,7 @@ def init_widgets_list(secondar=False):
             **systray_decor,
             ),
         widget.Spacer(length=5),
+        #网速显示
         widget.Net(
             background = colors[12],
             foreground = colors[1],
@@ -302,6 +325,7 @@ def init_widgets_list(secondar=False):
                 },
                 **decor
                 ),
+        #显卡显示
         widget.NvidiaSensors(
             foreground = colors[1],
             background = colors[11],
@@ -330,6 +354,7 @@ def init_widgets_list(secondar=False):
         #    },
         #    **decor
         #    ),
+        #cpu显示
         widget.CPU(
             foreground = colors[1],
             background = colors[11],
@@ -358,6 +383,7 @@ def init_widgets_list(secondar=False):
         #    },
         #    **decor
         #    ),
+        #内存显示
         widget.Memory(
             foreground = colors[1],
             background = colors[11],
@@ -373,8 +399,9 @@ def init_widgets_list(secondar=False):
             **decor
             ),
         widget.Spacer(length=10),
+        #音量显示
         widget.Volume(
-            background = colors[12],
+            background = colors[8],
             font = my_font,
             fontsize = 15, 
             emoji = True,
@@ -382,13 +409,13 @@ def init_widgets_list(secondar=False):
             **decor
             ),
         widget.Volume(
-            background = colors[12],
+            background = colors[8],
             foreground = colors[1],
             fontsize = 18,
             **decor
             ),
         widget.TextBox(
-            background = colors[12],
+            background = colors[8],
             foreground = colors[1],
             font = my_font,
             fontsize = 25,
@@ -396,8 +423,9 @@ def init_widgets_list(secondar=False):
             padding = 0,
             **decor
             ),
+        #背光显示
         widget.Backlight(
-            background = colors[12],
+            background = colors[8],
             foreground = colors[1],
             backlight_name = "intel_backlight",
             font = my_font,
@@ -405,6 +433,7 @@ def init_widgets_list(secondar=False):
             **decor
             ),
         widget.Spacer(length=10),
+        #电池显示
         widget.BatteryIcon(
             background = colors[10],
             scale = 1,
@@ -502,7 +531,7 @@ floating_layout = layout.Floating(
         Match(wm_class="lxappearance"), 
         Match(wm_class="Pavucontrol"), 
         Match(wm_class="kvantummanager"), 
-        Match(wm_class="blueman-manager"), 
+        Match(wm_class="blueman-manager"), #蓝牙
     ]
 )
 auto_fullscreen = True
