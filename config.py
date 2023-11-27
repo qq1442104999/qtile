@@ -10,11 +10,17 @@ from qtile_extras.widget.decorations import RectDecoration
 
 import os
 import subprocess
+import asyncio
 #------------------------------------------------------------------------------------------------------
 @hook.subscribe.startup_once
 def autostart():
     home = os.path.expanduser("~/.config/qtile/scripts/autostart.sh")
     subprocess.Popen([home])
+
+@hook.subscribe.layout_change
+def citx():
+    lazy.spawn("st")
+    lazy.window.toggle_minimize()
 
 @lazy.function
 def float_to_front(qtile):
@@ -293,11 +299,16 @@ def init_widgets_list(secondar=False):
             ),
         #系统托盘
         widget.Systray(
-            background = "00000000",
-            icon_size = 22,
+            background = "#000000",
+            icon_size = 20,
             padding = 5,
-            **systray_decor,
+            #**systray_decor,
+            **decor,
             ),
+        #widget.StatusNotifier(
+            #background = "#000000",
+            #**decor,
+            #),
         widget.Spacer(length=5),
         #网速显示
         widget.Net(
@@ -305,7 +316,10 @@ def init_widgets_list(secondar=False):
             foreground = colors[1],
             font = my_font,
             fontsize = 18,
-            format='{down:.0f}{down_suffix} ↓↑ {up:.0f}{up_suffix}',
+            padding = 0,
+            format=" {up:4.1f}{up_suffix:<2} {down:4.1f}{down_suffix:<2}",
+            #format = '{down:.0f}{down_suffix} ↓↑ {up:.0f}{up_suffix}',
+            #format = '{down} ↓↑ {up}',
             prefix="M",
             **decor
             ),
@@ -456,7 +470,7 @@ def init_widgets_list(secondar=False):
             foreground = colors[1],
             font = my_font,
             fontsize = 20,
-            text = "",
+            text = "",
             padding = 3,
             **decor
             ),
@@ -500,7 +514,8 @@ def init_widgets_list(secondar=False):
 widgets_list = init_widgets_list()
 
 def init_screens():
-    return [Screen(top=bar.Bar(widgets_list,30,opacity=1,background=colors[0]))]
+    return [Screen(top=bar.Bar(widgets_list,30,opacity=0.8,background=colors[0]))]
+    #return [Screen(top=bar.Bar(widgets_list,30,opacity=1,background="#404040"))]
 
 screens = init_screens()
             
