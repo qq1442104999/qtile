@@ -1,5 +1,5 @@
 ### 1) 管理用户目录的工具
-"sudo pacman -S xdg-user-dirs"
+sudo pacman -S xdg-user-dirs
 xdg-user-dirs-update
 
 ### 2）vim /etc/pacman.conf尾部添加
@@ -47,7 +47,7 @@ sudo systemctl enable docker
 ### 10)系统剪贴板 xclip
 
 ### 11)安装v2raya
-"""
+'''
 docker run -d \
 --restart=always \
 --privileged \
@@ -58,6 +58,6 @@ docker run -d \
 -v /etc/resolv.conf:/etc/resolv.conf \
 -v /etc/v2raya:/etc/v2raya \
 mzz2017/v2raya
-"""
+'''
 
 ### 12）yay -S picom
