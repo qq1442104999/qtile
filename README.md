@@ -1,4 +1,4 @@
-1)管理用户目录的工具
+1. 管理用户目录的工具
 sudo pacman -S xdg-user-dirs
 xdg-user-dirs-update
 
