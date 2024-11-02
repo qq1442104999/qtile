@@ -47,6 +47,7 @@ sudo systemctl enable docker
 ### 10)系统剪贴板 xclip
 
 ### 11)安装v2raya
+"""
 docker run -d \
 --restart=always \
 --privileged \
@@ -57,5 +58,6 @@ docker run -d \
 -v /etc/resolv.conf:/etc/resolv.conf \
 -v /etc/v2raya:/etc/v2raya \
 mzz2017/v2raya
+"""
 
 ### 12）yay -S picom
